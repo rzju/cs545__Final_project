@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Online Food Delivery Ordering System</title>
+    <link href="./themes/ecmoban_dangdang/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="top_nav">
+            <div class="block">
+                <ul class="top_bav_l">
+                </ul>
+                <div class="header_r">
+                    <font id="ECS_MEMBERZONE" v-if="islogin"> Welcome！ <s></s>&nbsp; <span> <a style="color: #FF6766;"
+                        href="login.html">[User Login]</a> <a style="color: #FF6766;" href="register.html">[Sign Up]</a>
+                </span>
+                    </font>
+                    <font id="ECS_MEMBERZONE" v-if="!islogin"> Hello <b>{{ realname }}</b> <span><a
+                        style="color: #FF6766;" href="cart.html">[Cart]</a><a style="color: #FF6766;" href="usercenter.html">[User Center]</a> <a
+                        style="color: #FF6766;" href="exit.html">[Quit System] </a> </span>
+                    </font>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="block header">
+                <div class="top">
+                    <a href="index.html" class="logo"><img src="themes/ecmoban_dangdang/images/logo.gif" alt="" /></a>
+                    <div class="top_search">
+                        <input name="keywords" type="text" class="keyword" v-model="key" placeholder="Input Food Name"/>
+                        <input value="Search" id="seachbtn" type="button" @click="query" style="background-color: #ff5000; color: #FFF; border: none">
+                    </div>
+                    <div class="head_r">
+                        <div class="top_shopCart clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="menu_box clearfix">
+            <div class="block">
+                <div class="menu">
+                    <a href="index.html" rel="nofollow">HomePage</a>
+                    <a href="article.html" rel="nofollow">Announcement</a>
+                    <a href="special.html" rel="nofollow">Special Offer</a>
+                    <a href="recommend.html" rel="nofollow">Recommendation</a>
+                    <a href="all.html" rel="nofollow">All Food</a>
+                </div>
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block box">
+            <div class="blank"></div>
+            <div id="ur_here">
+                Current Location: <a href="index.html">Homepage</a>
+                <code> &gt; </code> Sign Up
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block">
+            <div class="box">
+                <div class="box_1">
+                    <h3>
+                        <span>Sign Up</span>
+                    </h3>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr valign="top">
+                            <td bgcolor="#FFFFFF" align="center">
+                                <div class="blank5"></div>
+                                <table width="60%" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
+                                    <tr>
+                                        <td width="28%" align="right" bgcolor="#FFFFFF">User Name:</td>
+                                        <td width="76%" align="left" bgcolor="#FFFFFF"><input type="text" v-model="username" size="25" class="inputBg" id="username" placeholder="Input UserName" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28%" align="right" bgcolor="#FFFFFF">Password:</td>
+                                        <td width="76%" align="left" bgcolor="#FFFFFF"><input v-model="password" type="password" size="25" class="inputBg" id="password" placeholder="Input Password" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28%" align="right" bgcolor="#FFFFFF">Name：</td>
+                                        <td width="76%" align="left" bgcolor="#FFFFFF"><input v-model="realname" type="text" size="25" class="inputBg" id="realname" placeholder="Input Name" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28%" align="right" bgcolor="#FFFFFF">Gender:</td>
+                                        <td width="76%" align="left" bgcolor="#FFFFFF"><input type="radio" v-model="sex" name="sex" value="男" title="男" id="sex" />Male&nbsp;&nbsp;&nbsp;<input type="radio" v-model="sex" name="sex" value="女" title="女" id="sex" />Female</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28%" align="right" bgcolor="#FFFFFF">Date of Birth：</td>
+                                        <td width="76%" align="left" bgcolor="#FFFFFF"><input v-model="birthday" type="text" size="25" class="inputBg" id="birthday" @click="datePicker('birthday')" readonly="readonly" placeholder="Input Date of Birth" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28%" align="right" bgcolor="#FFFFFF">Contact Method：</td>
+                                        <td width="76%" align="left" bgcolor="#FFFFFF"><input v-model="contact" type="text" size="25" class="inputBg" id="contact" placeholder="Input Contact Method" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" align="center" bgcolor="#FFFFFF"><input type="button" class="bnt_blue_1" style="border: none;" value="Confirm" @click="toRegister()" /></td>
+                                    </tr>
+                                </table>
+                                <div class="blank5"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="blank5"></div>
+        </div>
+        <div id="footer">
+            <div class="footer">
+                <div class="footer_nav_box">
+                    <div class="footer_copyright">
+                        <span> &copy;  All rights reserved for the online food delivery ordering system. <br /> <br />Service Time：09:00-23:00<br /> <br /> <a href="../admin/index.html"
+                            target="_blank">Administrator Entrance</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="themes/js/jquery.min.js"></script>
+<script type="text/javascript" src="themes/layui/layui.js"></script>
+<script type="text/javascript" src="themes/js/axios.min.js"></script>
+<script type="text/javascript" src="themes/js/vue.js"></script>
+<script type="text/javascript">
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            username: '',
+            password: '',
+            realname: '',
+            sex: '男',
+            birthday: '',
+            contact: '',
+            islogin: '',
+            userid: '',
+            realname: '',
+            key: '',
+        },
+        methods: {
+            datePicker: function(elementId) {
+                let vueObj = this;
+                WdatePicker({
+                    el: elementId,
+                    dateFmt: 'yyyy-MM-dd',
+                    onpicked: function() {
+                        var value = $("#" + elementId).val();
+                        vueObj.birthday = value;
+                    },
+                    oncleared: function() {
+                        vueObj.birthday = null;
+                    },
+                    isShowClear: true,
+                    readOnly: true
+                });
+            },
+            loadPage: function() {
+                let _this = this;
+                _this.userid = sessionStorage.getItem('userid');
+                _this.islogin = sessionStorage.getItem('userid') == null;
+                _this.realname = sessionStorage.getItem('realname');
+            },
+            toRegister: function() {
+                let _this = this;
+                var data = {
+                    username: _this.username,
+                    password: _this.password,
+                    realname: _this.realname,
+                    sex: _this.sex,
+                    birthday: $('#birthday').val(),
+                    contact: _this.contact,
+                };
+                axios.post('http://localhost:8080/vue_zxwmdcxt/index/register.action', data).then(result => {
+                    if (result.data.code > 0) {
+                        alert('success');
+                        window.location.href = 'login.html';
+                    } else {
+                        console.log('fail');
+                    }
+                });
+            },
+            query: function() {
+                let url = "query.html?id=" + this.key;
+                window.location.href = url;
+            },
+        },
+        created() {
+            this.loadPage();
+        },
+    })
+</script>
+
+</html>

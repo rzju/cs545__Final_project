@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Administrative Back-end System</title>
+    <link rel="stylesheet" href="./common/css/sccl.css">
+    <link rel="stylesheet" type="text/css" href="./common/skin/qingxin/skin.css" id="layout-skin" />
+</head>
+
+<body>
+    <div class="layout-admin">
+        <header class="layout-header" id="app">
+            <span class="header-logo">Administrative Back-end System</span>
+            <a class="header-menu-btn" href="javascript:;"><i class="icon-font">&#xe600;</i></a>
+            <ul class="header-bar">
+                <li class="header-bar-role"><a href="javascript:;">{{role}}</a></li>
+                <li class="header-bar-nav">
+                    <a href="javascript:;">{{adminname}}<i class="icon-font" style="margin-left:5px;">&#xe60c;</i></a>
+                    <ul class="header-dropdown-menu">
+                        <li><a href="javascript:;" @click="exit()">Quit</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </header>
+        <aside class="layout-side">
+            <ul class="side-menu">
+                <li class="menu-header menu-item">Function Menu</li>
+                <li class="menu-item"><a><i class="icon-font "></i><span>Administrator Information Management</span><i class="icon-font icon-right"></i></a>
+                    <ul class="menu-item-child" id="menu-child-3"  style="display: none;">
+                        <li><a href="listadmin.html"><i class="icon-font"></i><span>Administrator Information List</span></a></li>
+                        <li><a href="editpwd.html"><i class="icon-font"></i><span>Update Password</span></a></li>
+                    </ul>
+                </li>
+                <li class="menu-item"><a><i class="icon-font "></i><span>User Information Management</span><i class="icon-font icon-right"></i></a>
+                    <ul class="menu-item-child" id="menu-child-3"  style="display: none;">
+                        <li><a href="listusers.html"><i class="icon-font"></i><span>User Information List</span></a></li>
+                    </ul>
+                </li>
+                <li class="menu-item"><a><i class="icon-font "></i><span>News Announcement Information Management</span><i class="icon-font icon-right"></i></a>
+                    <ul class="menu-item-child" id="menu-child-3"  style="display: none;">
+                        <li><a href="listarticle.html"><i class="icon-font"></i><span>News Announcement Information List</span></a></li>
+                    </ul>
+                </li>
+                <li class="menu-item"><a><i class="icon-font "></i><span>Food Type Information Management</span><i class="icon-font icon-right"></i></a>
+                    <ul class="menu-item-child" id="menu-child-3"  style="display: none;">
+                        <li><a href="listcate.html"><i class="icon-font"></i><span>Food Type Information List</span></a></li>
+                    </ul>
+                </li>
+                <li class="menu-item"><a><i class="icon-font "></i><span>Food Information Management</span><i class="icon-font icon-right"></i></a>
+                    <ul class="menu-item-child" id="menu-child-3"  style="display: none;">
+                        <li><a href="listfoods.html"><i class="icon-font"></i><span>Food Information List</span></a></li>
+                    </ul>
+                </li>
+                <li class="menu-item"><a><i class="icon-font "></i><span>Order Information Management</span><i class="icon-font icon-right"></i></a>
+                    <ul class="menu-item-child" id="menu-child-3"  style="display: none;">
+                        <li><a href="listorders.html"><i class="icon-font"></i><span>Order Information List</span></a></li>
+                    </ul>
+                </li>
+                <li class="menu-item"><a><i class="icon-font "></i><span>Order Review Information Management</span><i class="icon-font icon-right"></i></a>
+                    <ul class="menu-item-child" id="menu-child-3"  style="display: none;">
+                        <li><a href="listtopic.html"><i class="icon-font"></i><span>Order Review Information List</span></a></li>
+                    </ul>
+                </li>
+                <li class="menu-item"><a><i class="icon-font "></i><span>Feedback Information Management</span><i class="icon-font icon-right"></i></a>
+                    <ul class="menu-item-child" id="menu-child-3"  style="display: none;">
+                        <li><a href="listcomplains.html"><i class="icon-font"></i><span>Feedback Information List</span></a></li>
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+
+
+        <div class="layout-side-arrow">
+            <div class="layout-side-arrow-icon"><i class="icon-font">&#xe60d;</i></div>
+        </div>
+
+        <section class="layout-main">
+            <div class="layout-main-tab">
+                <button class="tab-btn btn-left"><i class="icon-font">&#xe60e;</i></button>
+                <nav class="tab-nav">
+                    <div class="tab-nav-content">
+                        <a href="javascript:;" class="content-tab active" data-id="welcome.html">Homepage</a>
+                    </div>
+                </nav>
+                <button class="tab-btn btn-right"><i class="icon-font">&#xe60f;</i></button>
+            </div>
+            <div class="layout-main-body">
+                <iframe class="body-iframe" name="iframe0" width="100%" height="99%" src="" frameborder="0" seamless></iframe>
+            </div>
+        </section>
+    </div>
+
+    <script type="text/javascript" src="./common/lib/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="./common/js/sccl.js"></script>
+    <script src="./common/js/vue.js"></script>
+    <script src="./common/js/axios.min.js"></script>
+    <script src="./common/element/element.js"></script>
+	<script type="text/javascript">
+		const vue = new Vue({ // 实例化Vue对象
+			el: '#app',// 绑定作用域
+			data: { //定义数据
+				adminname: '',
+				realname: '',
+				role: '',
+			},
+			methods: {
+				exit: function () {
+					if (window.confirm('确定要退出吗？')) {
+						sessionStorage.clear(); // 删除sesstion数据
+						window.location.href = 'index.html';
+					}
+				},
+				loadPage: function () {
+					this.adminname = sessionStorage.getItem('adminname');
+					this.realname = sessionStorage.getItem('realname');
+					this.role = sessionStorage.getItem('role');
+				},
+			},
+			// 生命周期相关的函数
+			created() {
+				this.loadPage();
+			},
+		})
+	</script>
+</body>
+
+</html>
+

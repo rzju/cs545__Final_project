@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.CartDAO">
+	<resultMap type="com.entity.Cart" id="cartMap">
+		<id property="cartid" column="cartid" />
+		<result property="usersid" column="usersid" />
+		<result property="foodsid" column="foodsid" />
+		<result property="price" column="price" />
+		<result property="num" column="num" />
+		<result property="addtime" column="addtime" />
+		<result property="username" column="username" />
+		<result property="foodsname" column="foodsname" />
+		<association property="users" column="usersid" select="com.dao.UsersDAO.getUsersById" javaType="com.entity.Users" />
+		<association property="foods" column="foodsid" select="com.dao.FoodsDAO.getFoodsById" javaType="com.entity.Foods" />
+	</resultMap>
+
+	<insert id="insertCart" parameterType="cart">
+		insert into cart(cartid  , usersid  , foodsid  , price  , num  , addtime ) values(#{cartid}  , #{usersid}   , #{foodsid}   , #{price}   , #{num}   , #{addtime} )
+	</insert>
+
+	<update id="updateCart" parameterType="cart">
+		update cart set  usersid=#{usersid}  , foodsid=#{foodsid}  , price=#{price}  , num=#{num}  , addtime=#{addtime}  where cartid=#{cartid}
+	</update>
+
+	<delete id="deleteCart" parameterType="String">
+		delete from cart where cartid = #{cartid}
+	</delete>
+
+	<select id="getAllCart" resultMap="cartMap">
+		select a.* , b.username , c.foodsname  from cart a , users b , foods c  where 1=1 and a.usersid = b.usersid and a.foodsid = c.foodsid  order by cartid desc
+	</select>
+
+	<select id="getCartById" parameterType="String" resultMap="cartMap">
+		select a.* , b.username , c.foodsname  from cart a , users b , foods c  where 1=1 and a.usersid = b.usersid and a.foodsid = c.foodsid and cartid=#{cartid} 
+	</select>
+
+	<select id="getCartByCond" parameterType="cart" resultMap="cartMap">
+		select a.* , b.username , c.foodsname  from cart a , users b , foods c  where 1=1 and a.usersid = b.usersid and a.foodsid = c.foodsid 
+		<if test="usersid != null and '' != usersid">
+			and a.usersid = #{usersid}  
+		</if>
+		<if test="foodsid != null and '' != foodsid">
+			and a.foodsid = #{foodsid}  
+		</if>
+		<if test="price != null and '' != price">
+			and a.price = #{price}  
+		</if>
+		<if test="num != null and '' != num">
+			and a.num = #{num}  
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime = #{addtime}  
+		</if>
+	</select>
+
+	<select id="getCartByLike" parameterType="cart" resultMap="cartMap">
+		select a.* , b.username , c.foodsname  from cart a , users b , foods c  where 1=1 and a.usersid = b.usersid and a.foodsid = c.foodsid 
+		<if test="usersid != null and '' != usersid">
+			and b.username like CONCAT('%', CONCAT(#{usersid}, '%'))
+		</if>
+		<if test="foodsid != null and '' != foodsid">
+			and c.foodsname like CONCAT('%', CONCAT(#{foodsid}, '%'))
+		</if>
+		<if test="price != null and '' != price">
+			and a.price like CONCAT('%', CONCAT(#{price}, '%'))
+		</if>
+		<if test="num != null and '' != num">
+			and a.num like CONCAT('%', CONCAT(#{num}, '%'))
+		</if>
+		<if test="addtime != null and '' != addtime">
+			and a.addtime like CONCAT('%', CONCAT(#{addtime}, '%'))
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Order Information</title>
+    <link rel="stylesheet" href="./common/element/element.css">
+</head>
+
+<body>
+    <div id="app">
+        <h2>Order Information</h2>
+        <el-row>
+            <el-col :span="18" style="margin-bottom: 10px">
+                <el-input v-model="keywords" style="width: 260px;" placeholder="Input Order Number"></el-input>
+                <el-button type="info" @click="query">Search</el-button>
+                <el-button type="success" @click="reload">Refresh</el-button>
+                <el-button type="warning" @click="datadel">Batch Delete</el-button>
+            </el-col>
+        </el-row>
+
+        <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" stripe border style="width: 99%" @selection-change="selsChange">
+            <el-table-column type="selection" width="45" align="center"></el-table-column>
+            <el-table-column prop="ordercode" label="Order Number" align="center"></el-table-column>
+            <el-table-column prop="username" label="User" align="center"></el-table-column>
+            <el-table-column prop="total" label="Total" align="center"></el-table-column>
+            <el-table-column prop="status" label="Status" align="center"></el-table-column>
+            <el-table-column prop="addtime" label="Date" align="center"></el-table-column>
+            <el-table-column prop="receiver" label="Recipient" align="center"></el-table-column>
+            <el-table-column prop="address" label="Address" align="center"></el-table-column>
+            <el-table-column prop="contact" label="Contact Method" align="center"></el-table-column>
+            <el-table-column fixed="right" label="Operate" width="150" align="center">
+                <template slot-scope="scope">
+                <span v-if="scope.row.status == 'Paid'">
+                    <el-button type="success" size="small" @click="status(scope.row.ordersid)">ship</el-button>
+                </span>
+                	<el-button type="danger" icon="el-icon-delete" size="small" circle @click="delete(scope.row.ordersid)"></el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-row type="flex" justify="center" style="margin-top: 10px">
+            <el-pagination background layout="prev, pager, next" :total="total" @current-change="current_change">
+            </el-pagination>
+        </el-row>
+
+        <el-dialog title="Order Information" :visible.sync="dialogVisible" >
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="Order Number">
+                    <el-input v-model="form.ordercode" readonly ></el-input>
+                </el-form-item>
+                <el-form-item label="User">
+                    <el-select v-model="form.usersid" filterable placeholder="Select User" value-key="usersid">
+                        <el-option v-for="item in users" :key="item.usersid" :label="item.username" :value="item.usersid"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Total">
+                    <el-input v-model="form.total" placeholder="Input Total"></el-input>
+                </el-form-item>
+                <el-form-item label="Recipient">
+                    <el-input v-model="form.receiver" placeholder="Input Recipient"></el-input>
+                </el-form-item>
+                <el-form-item label="Address">
+                    <el-input v-model="form.address" placeholder="Input Address"></el-input>
+                </el-form-item>
+                <el-form-item label="Contact Method">
+                    <el-input v-model="form.contact" placeholder="Contact Method"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="save">Confirm</el-button>
+            </span>
+        </el-dialog>
+
+    </div>
+
+    <script src="./common/js/jquery-1.9.0.min.js"></script>
+    <script src="./common/js/vue.js"></script>
+    <script src="./common/js/axios.min.js"></script>
+    <script src="./common/element/element.js"></script>
+    <script>
+        const vue = new Vue({
+            el: '#app',
+            data: {
+                tableData: [],
+                pageSize: 8,
+                total: 0,
+                dialogVisible: false,
+                form: {},
+                currentPage: 1,
+                keywords: '',
+                selectedData: [],
+
+                users: {},
+
+            },
+            created() {
+                    this.loadTable();
+            },
+            methods: {
+                loadTable: function() {
+                    let _this = this;
+                    axios.get('http://localhost:8080/vue_zxwmdcxt/orders/getOrdersMap.action').then(result => {
+                        _this.tableData = result.data.data;
+                        _this.total = _this.tableData.length;
+                    });
+                },
+                current_change: function(currentPage) {
+                    this.currentPage = currentPage;
+                },
+                reload: function() {
+                    this.loadTable();
+                },
+
+                reset: function() {
+                    this.form = {
+                    };
+                },
+
+                dialogLoad: function() {
+                    let _this = this;
+                    axios.get('http://localhost:8080/vue_zxwmdcxt/users/getAllUsers.action').then(result => {
+                        _this.users = result.data;
+                    });
+                },
+
+                add: function() {
+                    this.dialogVisible = true;
+                    this.dialogLoad();
+                    this.reset();
+                },
+
+                edit: function(ordersid) {
+                    let _this = this;
+                    _this.dialogVisible = true;
+                    axios.get('http://localhost:8080/vue_zxwmdcxt/orders/getOrdersById.action?id=' + ordersid).then(result => {
+                        _this.form = result.data;
+                    });
+                    this.dialogLoad();
+                },
+
+                save: function() {
+                    let _this = this;
+                    if (this.form.ordersid) {
+                        axios.post('http://localhost:8080/vue_zxwmdcxt/orders/updateOrders.action', _this.form).then(result => {
+                            if (result.data.code > 0) {
+                                alert('success');
+                                _this.loadTable();
+                                _this.dialogVisible = false;
+                            } else {
+                                console.log('fail');
+                            }
+                        });
+                    } else {
+                        axios.post('http://localhost:8080/vue_zxwmdcxt/orders/insertOrders.action', _this.form).then(result => {
+                            if (result.data.code > 0) {
+                                if (window.confirm('Success. Would you like to add more?')) {
+                                    _this.loadTable();
+                                    _this.dialogLoad();
+                                    _this.reset();
+                                } else {
+                                    _this.loadTable();
+                                    _this.dialogVisible = false;
+                                }
+                            } else {
+                                console.log('fail');
+                            }
+                        });
+                    }
+                },
+
+                cancel: function() {
+                    _this.dialogVisible = false;
+                },
+
+                query: function() {
+                    let _this = this;
+                    axios.get('http://localhost:8080/vue_zxwmdcxt/orders/getOrdersMap.action?keywords=' + _this.keywords).then(result => {
+                        _this.tableData = result.data.data;
+                        _this.total = _this.tableData.length;
+                    });
+                },
+
+                delete: function(ordersid) {
+                    let _this = this;
+                    if (window.confirm('Confirm to delete.')) {
+                        axios.get('http://localhost:8080/vue_zxwmdcxt/orders/deleteOrders.action?id=' + ordersid).then(result => {
+                            if (result.data.code > 0) {
+                                _this.loadTable();
+                            } else {
+                                alert('fail');
+                            }
+                        });
+                    }
+                },
+
+                selsChange: function(sels) {
+                    this.selectedData = sels;
+                },
+                datadel: function() {
+                    let _this = this;
+                    var ids = this.selectedData.map(item => item.ordersid).join();
+                    if (ids.length == 0) {
+                        alert('Please choose data to delete');
+                        return false;
+                    }
+                    if (window.confirm('Confirm to delete.')) {
+                        axios.post('http://localhost:8080/vue_zxwmdcxt/orders/deleteOrdersByIds.action', ids.split(',')).then(result => {
+                            if (result.data.code > 0) {
+                                _this.loadTable();
+                            } else {
+                                alert('fail');
+                            }
+                        });
+                    }
+                },
+
+				status: function(ordersid) {
+					let _this = this;
+					axios.get('http://localhost:8080/vue_zxwmdcxt/orders/status.action?id=' + ordersid).then(result => {
+    					if (result.data.code > 0) {
+       				 	_this.loadTable();
+					    } else {
+				        	alert('fail');
+    					}
+					});
+				},
+            },
+        });
+    </script>
+
+
+</body>
+
+</html>
+
+

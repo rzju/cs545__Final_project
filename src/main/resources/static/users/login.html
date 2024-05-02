@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Online food delivery ordering system</title>
+    <link href="./themes/ecmoban_dangdang/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="top_nav">
+            <div class="block">
+                <ul class="top_bav_l">
+                </ul>
+                <div class="header_r">
+                    <font id="ECS_MEMBERZONE" v-if="islogin"> Welcome！ <s></s>&nbsp; <span> <a style="color: #FF6766;"
+                        href="login.html">[User Login]</a> <a style="color: #FF6766;" href="register.html">[Sign up</a>
+                </span>
+                    </font>
+                    <font id="ECS_MEMBERZONE" v-if="!islogin"> Hello <b>{{ realname }}</b> <span><a
+                        style="color: #FF6766;" href="cart.html">[Cart]</a><a style="color: #FF6766;" href="usercenter.html">[User Center]</a> <a
+                        style="color: #FF6766;" href="exit.html">[Quit System] </a> </span>
+                    </font>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="block header">
+                <div class="top">
+                    <a href="index.html" class="logo"><img src="themes/ecmoban_dangdang/images/logo.gif" alt="" /></a>
+                    <div class="top_search">
+                        <input name="keywords" type="text" class="keyword" v-model="key" placeholder="Input Food Name"/>
+                        <input value="Search" id="seachbtn" type="button" @click="query" style="background-color: #ff5000; color: #FFF; border: none">
+                    </div>
+                    <div class="head_r">
+                        <div class="top_shopCart clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="menu_box clearfix">
+            <div class="block">
+                <div class="menu">
+                    <a href="index.html" rel="nofollow">HomePage</a>
+                    <a href="article.html" rel="nofollow">Announcement</a>
+                    <a href="special.html" rel="nofollow">Special Offer</a>
+                    <a href="recommend.html" rel="nofollow">Recommendation</a>
+                    <a href="all.html" rel="nofollow">All Food</a>
+                </div>
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block box">
+            <div class="blank"></div>
+            <div id="ur_here">
+                Current Location: <a href="index.html">Homepage</a>
+                <code> &gt; </code> User Login
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block">
+            <div class="box">
+                <div class="box_1">
+                    <h3>
+                        <span>User Login</span>
+                    </h3>
+                    <div class="blank5"></div>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                        <tr valign="top">
+                            <td bgcolor="#FFFFFF" align="center">
+                                <table width="60%" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
+                                    <tr>
+                                        <td width="28%" align="right" bgcolor="#FFFFFF">User Name：</td>
+                                        <td width="76%" align="left" bgcolor="#FFFFFF"><input type="text" size="25" class="inputBg" id="username" v-model="username" placeholder="Input Username" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28%" align="right" bgcolor="#FFFFFF">Password：</td>
+                                        <td width="76%" align="left" bgcolor="#FFFFFF"><input type="password" size="25" class="inputBg" id="password" v-model="password" placeholder="Input Password" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" align="center" bgcolor="#FFFFFF"><input type="button" class="bnt_blue_1" style="border: none;" value="Confirm Login" @click="toLogin()" /></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="blank5"></div>
+                </div>
+            </div>
+            <div class="blank5"></div>
+        </div>
+        <div class="blank"></div>
+        <div id="footer">
+            <div class="footer">
+                <div class="footer_nav_box">
+                    <div class="footer_copyright">
+                        <span> &copy;  All rights reserved for the online food delivery ordering system<br /> <br />Service Time：09:00-23:00<br /> <br /> <a href="../admin/index.html"
+                            target="_blank">Administrator Entrance </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="themes/js/jquery.min.js"></script>
+<script type="text/javascript" src="themes/layui/layui.js"></script>
+<script type="text/javascript" src="themes/js/axios.min.js"></script>
+<script type="text/javascript" src="themes/js/vue.js"></script>
+<script type="text/javascript">
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            username: '',
+            password: '',
+            islogin: '',
+            userid: '',
+            realname: '',
+            key: '',
+        },
+        methods: {
+            toLogin: function() {
+                let _this = this;
+                if (_this.username == '') {
+                    alert('Please enter username.');
+                    return;
+                } else if (_this.password == '') {
+                    alert('Please enter password.');
+                    return;
+                } else {
+                    var data = {
+                        username: _this.username,
+                        password: _this.password,
+                    }
+                    axios.post('http://localhost:8080/vue_zxwmdcxt/index/login.action', data).then(result => {
+                        if (result.data.success) {
+                            sessionStorage.setItem('userid', result.data.userid);
+                            sessionStorage.setItem('username', result.data.username);
+                            sessionStorage.setItem('realname', result.data.realname);
+                            window.location.href = 'index.html';
+                        } else {
+                            alert(result.data.message);
+                            _this.reset();
+                        }
+                    })
+                }
+            },
+            loadPage: function() {
+                let _this = this;
+                _this.userid = sessionStorage.getItem('userid');
+                _this.islogin = sessionStorage.getItem('userid') == null;
+                _this.realname = sessionStorage.getItem('realname');
+            },
+            query: function() {
+                let url = "query.html?id=" + this.key;
+                window.location.href = url;
+            },
+        },
+        created() {
+            this.loadPage();
+        },
+    })
+</script>
+
+</html>

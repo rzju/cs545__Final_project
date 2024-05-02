@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Online Food Delivery Ordering System</title>
+    <link href="./themes/ecmoban_dangdang/style.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="themes/layui/css/layui.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="top_nav">
+            <div class="block">
+                <ul class="top_bav_l">
+                </ul>
+                <div class="header_r">
+                    <font id="ECS_MEMBERZONE" v-if="islogin"> Welcome！ <s></s>&nbsp; <span> <a style="color: #FF6766;"
+                        href="login.html">[User Login]</a> <a style="color: #FF6766;" href="register.html">[Sign Up]</a>
+                </span>
+                    </font>
+                    <font id="ECS_MEMBERZONE" v-if="!islogin"> Hello <b>{{ realname }}</b> <span><a
+                        style="color: #FF6766;" href="cart.html">[Cart]</a><a style="color: #FF6766;" href="usercenter.html">[User Center]</a> <a
+                        style="color: #FF6766;" href="exit.html">[Quit System] </a> </span>
+                    </font>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="block header">
+                <div class="top">
+                    <a href="index.html" class="logo"><img src="themes/ecmoban_dangdang/images/logo.gif" alt="" /></a>
+                    <div class="top_search">
+                        <input name="keywords" type="text" class="keyword" v-model="key" placeholder="Input Food Name"/>
+                        <input value="Search" id="seachbtn" type="button" @click="query" style="background-color: #ff5000; color: #FFF; border: none">
+                    </div>
+                    <div class="head_r">
+                        <div class="top_shopCart clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="menu_box clearfix">
+            <div class="block">
+                <div class="menu">
+                    <a href="index.html" rel="nofollow">Homepage</a>
+                    <a href="article.html" rel="nofollow">Announcement</a>
+                    <a href="special.html" rel="nofollow">Special Offer</a>
+                    <a href="recommend.html" rel="nofollow">Recommendation</a>
+                    <a href="all.html" rel="nofollow">All Food</a>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="block box">
+            <div class="blank"></div>
+            <div id="ur_here">
+                <a href="index.html">Homepage</a><code> &gt; </code> FoodList
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block clearfix">
+            <div class="AreaL">
+                <div id="category_tree" class="category_tree">
+                    <div class="title">All Foods Categories</div>
+                    <dl class="clearfix" style="background: #fafafa; width: 216px; padding: 0;">
+                        <div class="box1 cate" id="cate">
+                            <h1 style="border-top: none" v-for="item in cateList" :key="item.cateid">
+                                <a :href="'cate.html?id='+item.cateid+''" class="  f_l">{{ item.catename }}</a>
+                            </h1>
+                        </div>
+                        <div style="clear: both"></div>
+                    </dl>
+                </div>
+                <div class="blank"></div>
+                <div class="box" id='history_div'>
+                    <div class="box_1">
+                        <h3>
+                            <span>You May Like</span>
+                        </h3>
+                        <div class="boxCenterList clearfix" id='history_list'>
+                            <ul class="clearfix" v-for="item in hotList" :key="item.foodsid">
+                                <li class="goodsimg">
+                                    <a :href="'detail.html?id='+item.foodsid+''" target="_blank"><img :src="'http://localhost:8080/vue_zxwmdcxt/upfiles/'+item.image" alt="" class="B_blue" /> </a>
+                                </li>
+                                <li><a :href="'detail.html?id='+item.foodsid+''" target="_blank" title="">{{item.foodsname}}</a> <br /> Price：
+                                    <font class="f1">${{item.price}}Dollars</font>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="blank5"></div>
+            </div>
+            <div class="AreaR">
+                <div class="box">
+                    <div class="box_1">
+                        <h3>
+                            <span>Food List</span>
+                        </h3>
+                        <div class="clearfix goodsBox" style="border: none; padding: 11px 0 10px 0px;">
+                            <div class="goodsItem" v-for="item in foodsList" :key="item.foodsid">
+                                <a :href="'detail.html?id='+item.foodsid+''"><img :src="'http://localhost:8080/vue_zxwmdcxt/upfiles/'+item.image" alt="" class="goodsimg" /></a><br />
+                                <p>
+                                    <a :href="'detail.html?id='+item.foodsid+''" title="">{{item.foodsname}}</a>
+                                </p>
+                                Price:
+                                <font class="shop_s">${{item.price}}Dollars</font><br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="blank5"></div>
+                <div id="layui" style="text-align: center"></div>
+            </div>
+        </div>
+        <div id="footer">
+            <div class="footer">
+                <div class="footer_nav_box">
+                    <div class="footer_copyright">
+                        <span> &copy;  All rights reserved for the online food delivery ordering system<br /> <br />Service Time：09:00-23:00<br /> <br /> <a href="../admin/index.html"
+                            target="_blank">Administrator Entrance</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="themes/js/jquery.min.js"></script>
+<script type="text/javascript" src="themes/layui/layui.js"></script>
+<script type="text/javascript" src="themes/js/axios.min.js"></script>
+<script type="text/javascript" src="themes/js/vue.js"></script>
+<script type="text/javascript">
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            id: '',
+            islogin: '',
+            userid: '',
+            realname: '',
+            cate: '',
+            cateList: {},
+            hotList: {},
+            foodsList: {},
+            page: {},
+            count: 0,
+            page: 1,
+            limit: 12,
+            key: '',
+        },
+        methods: {
+            loadTable: function() {
+                let _this = this;
+                axios.get('http://localhost:8080/vue_zxwmdcxt/index/special.action?page=' + _this.page + '&limit=' + _this.limit).then(result => {
+                    _this.foodsList = result.data.data;
+                    _this.count = result.data.count;
+                    if (_this.page == 1) {
+                        layui.use(['laypage'], function() {
+                            const laypage = layui.laypage;
+                            laypage.render({
+                                elem: 'layui',
+                                count: vue.count,
+                                limit: vue.limit,
+                                jump: function(obj, first) {
+                                    if (!first) {
+                                        vue.page = obj.curr;
+                                        vue.loadTable();
+                                    }
+                                }
+                            });
+                        })
+                    }
+                });
+            },
+            loadPage: function() {
+                let _this = this;
+                axios.get('http://localhost:8080/vue_zxwmdcxt/index/front.action').then(result => {
+                    _this.cateList = result.data.cateList;
+                    _this.hotList = result.data.hotList;
+                });
+                _this.loadTable();
+                _this.userid = sessionStorage.getItem('userid');
+                _this.islogin = sessionStorage.getItem('userid') == null;
+                _this.realname = sessionStorage.getItem('realname');
+            },
+            query: function() {
+                let url = "query.html?id=" + this.key;
+                window.location.href = url;
+            },
+        },
+        created() {
+            this.loadPage();
+        },
+    })
+</script>
+
+</html>

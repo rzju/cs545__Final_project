@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>News Announcement Information</title>
+    <link rel="stylesheet" href="./common/element/element.css">
+</head>
+
+<body>
+    <div id="app">
+        <h2>News Announcement Information</h2>
+        <el-row>
+            <el-col :span="18" style="margin-bottom: 10px">
+                <el-input v-model="keywords" style="width: 260px;" placeholder="Input Title"></el-input>
+                <el-button type="info" @click="query">Search</el-button>
+                <el-button type="primary" @click="add">Add</el-button>
+                <el-button type="success" @click="reload">Refresh</el-button>
+                <el-button type="warning" @click="datadel">Batch Delete</el-button>
+            </el-col>
+        </el-row>
+
+        <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" stripe border style="width: 99%" @selection-change="selsChange">
+            <el-table-column type="selection" width="45" align="center"></el-table-column>
+            <el-table-column prop="title" label="Title" align="center"></el-table-column>
+            <el-table-column prop="addtime" label="Issue Date" align="center"></el-table-column>
+            <el-table-column prop="hits" label="Clicks" align="center"></el-table-column>
+            <el-table-column fixed="right" label="Operate" width="150" align="center">
+                <template slot-scope="scope">
+
+                	<el-button type="primary" icon="el-icon-edit" size="small" circle @click="edit(scope.row.articleid)"></el-button>
+                	<el-button type="danger" icon="el-icon-delete" size="small" circle @click="delete(scope.row.articleid)"></el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-row type="flex" justify="center" style="margin-top: 10px">
+            <el-pagination background layout="prev, pager, next" :total="total" @current-change="current_change">
+            </el-pagination>
+        </el-row>
+
+        <el-dialog title="News Announcement Information" :visible.sync="dialogVisible" >
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="Title">
+                    <el-input v-model="form.title" placeholder="Input Title"></el-input>
+                </el-form-item>
+                <el-form-item label="Picture">
+                    <el-col :span="12">
+                        <el-input v-model="form.image" placeholder="Select Picture"></el-input>
+                    </el-col>
+                    <el-button size="small" type="primary" icon="el-icon-upload" @click="uploadFile">Upload</el-button>
+                </el-form-item>
+                <el-form-item label="Content">
+                    <el-input v-model="form.contents" type="textarea" placeholder="Input Content" :autosize="{minRows: 6, maxRows: 6}" :style="{width: '100%'}"></el-input>
+                </el-form-item>
+
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="save">Confirm</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog title="Upload" width="40%" :visible.sync="uploadTemplateDialog">
+            <el-row>
+                <el-col :span="22">
+                    <el-upload class="upload-demo" ref="upload" action="" :accept="acceptFileType" :limit="1" :on-exceed="handleExceed" :before-upload="beforeUpload" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" :auto-upload="false">
+                        <el-button slot="trigger" size="small" type="primary">Select File</el-button>
+                    </el-upload>
+                </el-col>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="submitUpload" type="primary" size="mini" :loading="uploadLoading" >Confirm</el-button>
+                <el-button @click="uploadTemplateDialog=false" size="mini">Cancel</el-button>
+            </span>
+        </el-dialog>
+
+    </div>
+
+    <script src="./common/js/jquery-1.9.0.min.js"></script>
+    <script src="./common/js/vue.js"></script>
+    <script src="./common/js/axios.min.js"></script>
+    <script src="./common/element/element.js"></script>
+    <script>
+        const vue = new Vue({
+            el: '#app',
+            data: {
+                tableData: [],
+                pageSize: 8,
+                total: 0,
+                dialogVisible: false,
+                form: {},
+                currentPage: 1,
+                keywords: '',
+                selectedData: [],
+
+
+                image: '', //
+                uploadTemplateDialog: false,
+                fileList: [],
+                uploadLoading: false,
+                acceptFileType: '*.*',
+                downLoadLoading: '',
+            },
+            created() {
+                    this.loadTable();
+            },
+            methods: {
+                loadTable: function() {
+                    let _this = this;
+                    axios.get('http://localhost:8080/vue_zxwmdcxt/article/getArticleMap.action').then(result => {
+                        _this.tableData = result.data.data;
+                        _this.total = _this.tableData.length;
+                    });
+                },
+                current_change: function(currentPage) {
+                    this.currentPage = currentPage;
+                },
+                reload: function() {
+                    this.loadTable();
+                },
+
+                reset: function() {
+                    this.form = {
+                    };
+                },
+
+                dialogLoad: function() {
+                    let _this = this;
+                },
+
+                add: function() {
+                    this.dialogVisible = true;
+                    this.dialogLoad();
+                    this.reset();
+                },
+
+                edit: function(articleid) {
+                    let _this = this;
+                    _this.dialogVisible = true;
+                    axios.get('http://localhost:8080/vue_zxwmdcxt/article/getArticleById.action?id=' + articleid).then(result => {
+                        _this.form = result.data;
+                    });
+                    this.dialogLoad();
+                },
+
+                save: function() {
+                    let _this = this;
+                    if (this.form.articleid) {
+                        axios.post('http://localhost:8080/vue_zxwmdcxt/article/updateArticle.action', _this.form).then(result => {
+                            if (result.data.code > 0) {
+                                alert('success');
+                                _this.loadTable();
+                                _this.dialogVisible = false;
+                            } else {
+                                console.log('fail');
+                            }
+                        });
+                    } else {
+                        axios.post('http://localhost:8080/vue_zxwmdcxt/article/insertArticle.action', _this.form).then(result => {
+                            if (result.data.code > 0) {
+                                if (window.confirm('Success. Would you like to add more?')) {
+                                    _this.loadTable();
+                                    _this.dialogLoad();
+                                    _this.reset();
+                                } else {
+                                    _this.loadTable();
+                                    _this.dialogVisible = false;
+                                }
+                            } else {
+                                console.log('fail');
+                            }
+                        });
+                    }
+                },
+
+                cancel: function() {
+                    _this.dialogVisible = false;
+                },
+
+                query: function() {
+                    let _this = this;
+                    axios.get('http://localhost:8080/vue_zxwmdcxt/article/getArticleMap.action?keywords=' + _this.keywords).then(result => {
+                        _this.tableData = result.data.data;
+                        _this.total = _this.tableData.length;
+                    });
+                },
+
+                delete: function(articleid) {
+                    let _this = this;
+                    if (window.confirm('Confirm to delete.')) {
+                        axios.get('http://localhost:8080/vue_zxwmdcxt/article/deleteArticle.action?id=' + articleid).then(result => {
+                            if (result.data.code > 0) {
+                                _this.loadTable();
+                            } else {
+                                alert('fail');
+                            }
+                        });
+                    }
+                },
+
+                selsChange: function(sels) {
+                    this.selectedData = sels;
+                },
+                datadel: function() {
+                    let _this = this;
+                    var ids = this.selectedData.map(item => item.articleid).join();
+                    if (ids.length == 0) {
+                        alert('Please choose data to be deleted');
+                        return false;
+                    }
+                    if (window.confirm('Confirm to delete.')) {
+                        axios.post('http://localhost:8080/vue_zxwmdcxt/article/deleteArticleByIds.action', ids.split(',')).then(result => {
+                            if (result.data.code > 0) {
+                                _this.loadTable();
+                            } else {
+                                alert('fail');
+                            }
+                        });
+                    }
+                },
+
+                uploadFile: function() {
+                    this.uploadLoading = false;
+                    var _this = this;
+                    _this.fileList = [];
+                    _this.uploadTemplateDialog = true;
+                },
+                handleExceed: function(files, fileList) {
+                    this.$message.warning('You can only select one file.');
+                },
+                submitUpload: function() {
+                    var _this = this;
+                    _this.uploadLoading = true;
+                    _this.$refs.upload.submit();
+                },
+                handleRemove(file, fileList) {},
+                handlePreview: function(file) {},
+                beforeUpload: function(file) {
+                    var _this = this;
+                    let formData = new FormData();
+                    formData.append('image', file);
+                    axios({
+                        method: 'post',
+                        url: 'http://localhost:8080/vue_zxwmdcxt/ajaxupload/upload.action',
+                        data: formData,
+                        headers: {
+                            "Content-Type": "multipart/form-data;"
+                        }
+                    }).then(rsp => {
+                        _this.uploadLoading = false;
+                        _this.form.image = rsp.data.url;
+                        this.uploadTemplateDialog = false;
+                    })
+                    return false;
+                },
+            },
+        });
+    </script>
+
+
+</body>
+
+</html>
+
+

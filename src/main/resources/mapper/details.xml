@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.DetailsDAO">
+	<resultMap type="com.entity.Details" id="detailsMap">
+		<id property="detailsid" column="detailsid" />
+		<result property="ordercode" column="ordercode" />
+		<result property="foodsid" column="foodsid" />
+		<result property="price" column="price" />
+		<result property="num" column="num" />
+		<result property="foodsname" column="foodsname" />
+		<association property="foods" column="foodsid" select="com.dao.FoodsDAO.getFoodsById" javaType="com.entity.Foods" />
+	</resultMap>
+
+	<insert id="insertDetails" parameterType="details">
+		insert into details(detailsid  , ordercode  , foodsid  , price  , num ) values(#{detailsid}  , #{ordercode}   , #{foodsid}   , #{price}   , #{num} )
+	</insert>
+
+	<update id="updateDetails" parameterType="details">
+		update details set  ordercode=#{ordercode}  , foodsid=#{foodsid}  , price=#{price}  , num=#{num}  where detailsid=#{detailsid}
+	</update>
+
+	<delete id="deleteDetails" parameterType="String">
+		delete from details where detailsid = #{detailsid}
+	</delete>
+
+	<select id="getAllDetails" resultMap="detailsMap">
+		select a.* , b.foodsname  from details a , foods b  where 1=1 and a.foodsid = b.foodsid  order by detailsid desc
+	</select>
+
+	<select id="getDetailsById" parameterType="String" resultMap="detailsMap">
+		select a.* , b.foodsname  from details a , foods b  where 1=1 and a.foodsid = b.foodsid and detailsid=#{detailsid} 
+	</select>
+
+	<select id="getDetailsByCond" parameterType="details" resultMap="detailsMap">
+		select a.* , b.foodsname  from details a , foods b  where 1=1 and a.foodsid = b.foodsid 
+		<if test="ordercode != null and '' != ordercode">
+			and a.ordercode = #{ordercode}  
+		</if>
+		<if test="foodsid != null and '' != foodsid">
+			and a.foodsid = #{foodsid}  
+		</if>
+		<if test="price != null and '' != price">
+			and a.price = #{price}  
+		</if>
+		<if test="num != null and '' != num">
+			and a.num = #{num}  
+		</if>
+	</select>
+
+	<select id="getDetailsByLike" parameterType="details" resultMap="detailsMap">
+		select a.* , b.foodsname  from details a , foods b  where 1=1 and a.foodsid = b.foodsid 
+		<if test="ordercode != null and '' != ordercode">
+			and a.ordercode like CONCAT('%', CONCAT(#{ordercode}, '%'))
+		</if>
+		<if test="foodsid != null and '' != foodsid">
+			and b.foodsname like CONCAT('%', CONCAT(#{foodsid}, '%'))
+		</if>
+		<if test="price != null and '' != price">
+			and a.price like CONCAT('%', CONCAT(#{price}, '%'))
+		</if>
+		<if test="num != null and '' != num">
+			and a.num like CONCAT('%', CONCAT(#{num}, '%'))
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

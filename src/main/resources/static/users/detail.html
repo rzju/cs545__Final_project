@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Online food delivery ordering system</title>
+    <link href="./themes/ecmoban_dangdang/style.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../admin/asset/layui/css/layui.css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="top_nav">
+            <div class="block">
+                <ul class="top_bav_l">
+                </ul>
+                <div class="header_r">
+                    <font id="ECS_MEMBERZONE" v-if="islogin"> Welcome！ <s></s>&nbsp; <span> <a style="color: #FF6766;"
+                        href="login.html">[User Login]</a> <a style="color: #FF6766;" href="register.html">[Sign Up]</a>
+                </span>
+                    </font>
+                    <font id="ECS_MEMBERZONE" v-if="!islogin"> Hello <b>{{ realname }}</b> <span><a
+                        style="color: #FF6766;" href="cart.html">[Cart]</a><a style="color: #FF6766;" href="usercenter.html">[User Center]</a> <a
+                        style="color: #FF6766;" href="exit.html">[Quit System] </a> </span>
+                    </font>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="block header">
+                <div class="top">
+                    <a href="index.html" class="logo"><img src="themes/ecmoban_dangdang/images/logo.gif" alt="" /></a>
+                    <div class="top_search">
+                        <input name="keywords" type="text" class="keyword" v-model="key" placeholder="Input Food name"/>
+                        <input value="Search" id="seachbtn" type="button" @click="query" style="background-color: #ff5000; color: #FFF; border: none">
+                    </div>
+                    <div class="head_r">
+                        <div class="top_shopCart clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="menu_box clearfix">
+            <div class="block">
+                <div class="menu">
+                    <a href="index.html" rel="nofollow">Homepage</a>
+                    <a href="article.html" rel="nofollow">Announcement</a>
+                    <a href="special.html" rel="nofollow">Special Offer</a>
+                    <a href="recommend.html" rel="nofollow">Recommendation</a>
+                    <a href="all.html" rel="nofollow">All Food</a>
+                </div>
+            </div>
+        </div>
+        <div class="block box">
+            <div class="blank"></div>
+            <div id="ur_here">
+                Current Location: <a href="index.html">Home page</a>
+                <code>&gt;</code>
+                <a href="all.html">All Foods</a>
+                <code> &gt; </code>
+                <a :href="'cate.html?id='+foods.cateid+''">{{ foods.catename }}</a>
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block clearfix">
+            <div class="AreaL">
+                <div id="category_tree" class="category_tree">
+                    <div class="title">All food categories</div>
+                    <dl class="clearfix" style="background: #fafafa; width: 216px; padding: 0;">
+                        <div class="box1 cate" id="cate">
+                            <h1 style="border-top: none" v-for="item in cateList" :key="item.cateid">
+                                <a :href="'cate.html?id='+item.cateid+''" class="  f_l">{{ item.catename }}</a>
+                            </h1>
+                        </div>
+                        <div style="clear: both"></div>
+                    </dl>
+                </div>
+                <div class="blank"></div>
+                <div class="box" id='history_div'>
+                    <div class="box_1">
+                        <h3>
+                            <span>You may also like:</span>
+                        </h3>
+                        <div class="boxCenterList clearfix" id='history_list'>
+                            <ul class="clearfix" v-for="item in hotList" :key="item.foodsid">
+                                <li class="goodsimg">
+                                    <a :href="'detail.html?id='+item.foodsid+''" target="_blank"><img :src="'http://localhost:8080/vue_zxwmdcxt/upfiles/'+item.image" alt="" class="B_blue" /> </a>
+                                </li>
+                                <li><a :href="'detail.html?id='+item.foodsid+''" target="_blank" title="">{{item.foodsname}}</a> <br /> Price：
+                                    <font class="f1">${{item.price}}Dollars</font>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="blank5"></div>
+            </div>
+            <div class="AreaR">
+                <div id="goodsInfo" class="clearfix">
+                    <div class="imgInfo">
+                        <img :src="'http://localhost:8080/vue_zxwmdcxt/upfiles/'+foods.image" alt="" width="360px;" height="360px" />
+                        <div class="blank5"></div>
+                        <div class="blank"></div>
+                    </div>
+                    <div class="textInfo">
+                        <form action="index/addcart.action" method="post" name="ECS_FORMBUY" id="ECS_FORMBUY">
+                            <h1 class="clearfix">{{ foods.foodsname }}</h1>
+                            <ul class="ul2 clearfix">
+                                <li class="clearfix" style="width: 100%">
+                                    <dd>
+                                        <strong>Price：</strong>
+                                        <font class="shop" id="ECS_SHOPPRICE">${{ foods.price }}Dollars</font>
+                                    </dd>
+                                </li>
+                                <li class="clearfix" style="width: 100%">
+                                    <dd>
+                                        <strong>Food Type：</strong><a :href="'cate.html?id='+foods.cateid+''">{{ foods.catename }}</a>
+                                    </dd>
+                                </li>
+                                <li class="clearfix" style="width: 100%">
+                                    <dd>
+                                        <strong>Add Favorite：</strong><a href="javascript:;" @click="addfav();">Add Favorite</a>
+                                    </dd>
+                                </li>
+                                <li class="clearfix" style="width: 100%">
+                                    <dd>
+                                        <strong>launch Date：</strong>{{ foods.addtime }}
+                                    </dd>
+                                </li>
+                                <li class="clearfix" style="width: 100%">
+                                    <dd>
+                                        <strong>Click Count：</strong>{{ foods.hits }}
+                                    </dd>
+                                </li>
+                                <li class="clearfix" style="width: 100%">
+                                    <dd>
+                                        <strong>Sales Volume：</strong>{{ foods.sellnum }}
+                                    </dd>
+                                </li>
+                            </ul>
+                            <ul class="bnt_ul">
+                                <li class="clearfix">
+                                    <dd>
+                                        <strong>Purchase Quantity：</strong> <input name="num" type="text" id="number" v-model="number" value="1" size="4" style="border: 1px solid #ccc;" />
+                                    </dd>
+                                </li>
+                                <li class="padd">
+                                    <a href="javascript:;" @click="addcart()"><img src="themes/ecmoban_dangdang/images/goumai2.png" /></a>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+                <div class="blank"></div>
+                <div class="box">
+                    <div style="padding: 0 0px;">
+                        <div id="com_b" class="history clearfix">
+                            <h2>Food Description</h2>
+                        </div>
+                    </div>
+                    <div class="box_1">
+                        <div id="com_v" class="  " style="padding: 6px;"></div>
+                        <div id="com_h">
+                            <blockquote>{{ foods.contents }}</blockquote>
+                        </div>
+                    </div>
+                </div>
+                <div class="blank"></div>
+                <div id="ECS_COMMENT">
+                    <div class="box">
+                        <div class="box_1">
+                            <h3>
+                                <span class="text">User Review</span>(Total
+                                <font class="f1">{{topicList.length}}</font>Comments)
+                            </h3>
+                            <div class="boxCenterList clearfix" style="height: 1%;">
+                                <ul class="comments">
+                                    <li class="word" v-for="item in topicList" :key="item.topicid">
+                                        <font class="f2">{{item.username}}</font>
+                                        <font class="f3">({{item.addtime}}) </font> <br /> <img :src="'themes/ecmoban_dangdang/images/stars'+item.num +'.gif'" alt="" />
+                                        <p>{{item.contents}}</p>
+                                    </li>
+                                </ul>
+                                <div class="blank5"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blank5"></div>
+                </div>
+            </div>
+            <div id="footer">
+                <div class="footer">
+                    <div class="footer_nav_box">
+                        <div class="footer_copyright">
+                            <span> &copy;  All rights reserved for the online food delivery ordering system <br /> <br />Service Time ：09:00-23:00<br /> <br /> <a href="../admin/index.html"
+                            target="_blank">Administrator Entrance</a>
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="themes/js/jquery.min.js"></script>
+<script type="text/javascript" src="themes/layui/layui.js"></script>
+<script type="text/javascript" src="themes/js/axios.min.js"></script>
+<script type="text/javascript" src="themes/js/vue.js"></script>
+<script type="text/javascript">
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            id: '',
+            islogin: '',
+            userid: '',
+            realname: '',
+            cate: '',
+            number: '1',
+            cateList: {},
+            hotList: {},
+            page: {},
+            count: 0,
+            page: 1,
+            limit: 12,
+            foods: [],
+            topicList: {},
+            key: '',
+        },
+        methods: {
+            getUrlParam: function() {
+                var name, value;
+                var str = location.href;
+                var num = str.indexOf("?");
+                str = str.substr(num + 1);
+                var arr = str.split("&");
+                for (var i = 0; i < arr.length; i++) {
+                    num = arr[i].indexOf("=");
+                    if (num > 0) {
+                        name = arr[i].substring(0, num);
+                        value = arr[i].substr(num + 1);
+                        this.id = value;
+                    }
+                }
+            },
+            loadPage: function() {
+                let _this = this;
+                _this.getUrlParam();
+                axios.get('http://localhost:8080/vue_zxwmdcxt/index/detail.action?id=' + _this.id).then(result => {
+                    _this.foods = result.data.foods;
+                    _this.topicList = result.data.topicList;
+                });
+                axios.get('http://localhost:8080/vue_zxwmdcxt/index/front.action').then(result => {
+                    _this.cateList = result.data.cateList;
+                    _this.hotList = result.data.hotList;
+                });
+                _this.userid = sessionStorage.getItem('userid');
+                _this.islogin = sessionStorage.getItem('userid') == null;
+                _this.realname = sessionStorage.getItem('realname');
+
+            },
+            addcart: function() {
+                let _this = this;
+                var data = {
+                    foodsid: _this.id,
+                    userid: _this.userid,
+                    price: _this.foods.price,
+                    num: _this.number,
+                };
+                axios.post('http://localhost:8080/vue_zxwmdcxt/index/addcart.action', data).then(result => {
+                    if (result.data.code > 0) {
+                        window.location.href = "cart.html";
+                    } else {
+                        alert(result.data.message);
+                    }
+                });
+            },
+            addfav: function() {
+                let _this = this;
+                var data = {
+                    foodsid: _this.id,
+                    userid: _this.userid,
+                };
+                axios.post('http://localhost:8080/vue_zxwmdcxt/index/addfav.action', data).then(result => {
+                    if (result.data.code > 0) {
+                        window.location.href = "myfav.html";
+                    } else {
+                        alert(result.data.message);
+                    }
+                });
+            },
+            query: function() {
+                let url = "query.html?id=" + this.key;
+                window.location.href = url;
+            },
+        },
+        created() {
+            this.loadPage();
+        },
+    })
+</script>
+
+</html>

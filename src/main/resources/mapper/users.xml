@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.UsersDAO">
+	<resultMap type="com.entity.Users" id="usersMap">
+		<id property="usersid" column="usersid" />
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+		<result property="realname" column="realname" />
+		<result property="sex" column="sex" />
+		<result property="birthday" column="birthday" />
+		<result property="contact" column="contact" />
+		<result property="regdate" column="regdate" />
+	</resultMap>
+
+	<insert id="insertUsers" parameterType="users">
+		insert into users(usersid  , username  , password  , realname  , sex  , birthday  , contact  , regdate ) values(#{usersid}  , #{username}   , #{password}   , #{realname}   , 'male'   , #{birthday}   , #{contact}   , #{regdate} )
+	</insert>
+
+	<update id="updateUsers" parameterType="users">
+		update users set  username=#{username}  , password=#{password}  , realname=#{realname}  , sex=#{sex}  , birthday=#{birthday}  , contact=#{contact}  , regdate=#{regdate}  where usersid=#{usersid}
+	</update>
+
+	<delete id="deleteUsers" parameterType="String">
+		delete from users where usersid = #{usersid}
+	</delete>
+
+	<select id="getAllUsers" resultMap="usersMap">
+		select a.*  from users a  where 1=1  order by usersid desc
+	</select>
+
+	<select id="getUsersById" parameterType="String" resultMap="usersMap">
+		select a.*  from users a  where 1=1 and usersid=#{usersid} 
+	</select>
+
+	<select id="getUsersByCond" parameterType="users" resultMap="usersMap">
+		select a.*  from users a  where 1=1 
+		<if test="username != null and '' != username">
+			and a.username = #{username}  
+		</if>
+		<if test="password != null and '' != password">
+			and a.password = #{password}  
+		</if>
+		<if test="realname != null and '' != realname">
+			and a.realname = #{realname}  
+		</if>
+		<if test="sex != null and '' != sex">
+			and a.sex = #{sex}  
+		</if>
+		<if test="birthday != null and '' != birthday">
+			and a.birthday = #{birthday}  
+		</if>
+		<if test="contact != null and '' != contact">
+			and a.contact = #{contact}  
+		</if>
+		<if test="regdate != null and '' != regdate">
+			and a.regdate = #{regdate}  
+		</if>
+	</select>
+
+	<select id="getUsersByLike" parameterType="users" resultMap="usersMap">
+		select a.*  from users a  where 1=1 
+		<if test="username != null and '' != username">
+			and a.username like CONCAT('%', CONCAT(#{username}, '%'))
+		</if>
+		<if test="password != null and '' != password">
+			and a.password like CONCAT('%', CONCAT(#{password}, '%'))
+		</if>
+		<if test="realname != null and '' != realname">
+			and a.realname like CONCAT('%', CONCAT(#{realname}, '%'))
+		</if>
+		<if test="sex != null and '' != sex">
+			and a.sex like CONCAT('%', CONCAT(#{sex}, '%'))
+		</if>
+		<if test="birthday != null and '' != birthday">
+			and a.birthday like CONCAT('%', CONCAT(#{birthday}, '%'))
+		</if>
+		<if test="contact != null and '' != contact">
+			and a.contact like CONCAT('%', CONCAT(#{contact}, '%'))
+		</if>
+		<if test="regdate != null and '' != regdate">
+			and a.regdate like CONCAT('%', CONCAT(#{regdate}, '%'))
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

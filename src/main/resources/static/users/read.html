@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Online Food Delivery Ordering System</title>
+    <link href="./themes/ecmoban_dangdang/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="top_nav">
+            <div class="block">
+                <ul class="top_bav_l">
+                </ul>
+                <div class="header_r">
+                    <font id="ECS_MEMBERZONE" v-if="islogin"> Welcome！ <s></s>&nbsp; <span> <a style="color: #FF6766;"
+                        href="login.html">[User Login]</a> <a style="color: #FF6766;" href="register.html">[Sign Up]</a>
+                </span>
+                    </font>
+                    <font id="ECS_MEMBERZONE" v-if="!islogin"> Hello <b>{{ realname }}</b> <span><a
+                        style="color: #FF6766;" href="cart.html">[Cart]</a><a style="color: #FF6766;" href="usercenter.html">[User Center]</a> <a
+                        style="color: #FF6766;" href="exit.html">[Quit System] </a> </span>
+                    </font>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="block header">
+                <div class="top">
+                    <a href="index.html" class="logo"><img src="themes/ecmoban_dangdang/images/logo.gif" alt="" /></a>
+                    <div class="top_search">
+                        <input name="keywords" type="text" class="keyword" v-model="key" placeholder="Input Food Name"/>
+                        <input value="Search" id="seachbtn" type="button" @click="query" style="background-color: #ff5000; color: #FFF; border: none">
+                    </div>
+                    <div class="head_r">
+                        <div class="top_shopCart clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="menu_box clearfix">
+            <div class="block">
+                <div class="menu">
+                    <a href="index.html" rel="nofollow">Homepage</a>
+                    <a href="article.html" rel="nofollow">Announcement</a>
+                    <a href="special.html" rel="nofollow">Special Food</a>
+                    <a href="recommend.html" rel="nofollow">Recommendation</a>
+                    <a href="all.html" rel="nofollow">All Foods</a>
+                </div>
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block box">
+            <div class="blank"></div>
+            <div id="ur_here">
+                Current Location: <a href="index.html">Homepage</a>
+                <code>&gt;</code>
+                <a href="article.html">Mall Announcement</a>
+                <code> &gt; </code> {{article.title}}
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block">
+            <div class="box">
+                <div class="box_1">
+                    <h3>
+                        <span>{{article.title}}</span>
+                    </h3>
+                    <div class="boxCenterList">
+                        <center>
+                            <img :src="'http://localhost:8080/vue_zxwmdcxt/upfiles/'+article.image" alt="" width="300" height="200" />
+                        </center>
+                        {{article.contents}}
+                    </div>
+                </div>
+            </div>
+            <div class="blank5"></div>
+        </div>
+        <div class="blank"></div>
+        <div id="footer">
+            <div class="footer">
+                <div class="footer_nav_box">
+                    <div class="footer_copyright">
+                        <span> &copy;  All rights reserved for the online food delivery ordering system. <br /> <br />Service Time：09:00-23:00<br /> <br /> <a href="../admin/index.html"
+                            target="_blank">Administrator Entrance </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="themes/js/jquery.min.js"></script>
+<script type="text/javascript" src="themes/layui/layui.js"></script>
+<script type="text/javascript" src="themes/js/axios.min.js"></script>
+<script type="text/javascript" src="themes/js/vue.js"></script>
+<script type="text/javascript">
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            id: '',
+            islogin: '',
+            userid: '',
+            realname: '',
+            article: [],
+            key: '',
+        },
+        methods: {
+            getUrlParam: function() {
+                var name, value;
+                var str = location.href;
+                var num = str.indexOf("?");
+                str = str.substr(num + 1);
+                var arr = str.split("&");
+                for (var i = 0; i < arr.length; i++) {
+                    num = arr[i].indexOf("=");
+                    if (num > 0) {
+                        name = arr[i].substring(0, num);
+                        value = arr[i].substr(num + 1);
+                        this.id = value;
+                    }
+                }
+            },
+            loadPage: function() {
+                let _this = this;
+                _this.getUrlParam();
+                axios.get('http://localhost:8080/vue_zxwmdcxt/index/read.action?id=' + _this.id).then(result => {
+                    _this.article = result.data.article;
+                });
+                _this.userid = sessionStorage.getItem('userid');
+                _this.islogin = sessionStorage.getItem('userid') == null;
+                _this.realname = sessionStorage.getItem('realname');
+            },
+            query: function() {
+                let url = "query.html?id=" + this.key;
+                window.location.href = url;
+            },
+        },
+        created() {
+            this.loadPage();
+        },
+    })
+</script>
+
+</html>

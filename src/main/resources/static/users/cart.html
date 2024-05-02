@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Online food delivery ordering system</title>
+    <link href="./themes/ecmoban_dangdang/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="top_nav">
+            <div class="block">
+                <ul class="top_bav_l">
+                </ul>
+                <div class="header_r">
+                    <font id="ECS_MEMBERZONE" v-if="islogin"> Welcome！ <s></s>&nbsp; <span> <a style="color: #FF6766;"
+                        href="login.html">[User login]</a> <a style="color: #FF6766;" href="register.html">[Sign up]</a>
+                </span>
+                    </font>
+                    <font id="ECS_MEMBERZONE" v-if="!islogin"> Hello <b>{{ realname }}</b> <span><a
+                        style="color: #FF6766;" href="cart.html">[Cart]</a><a style="color: #FF6766;" href="usercenter.html">[User Center]</a> <a
+                        style="color: #FF6766;" href="exit.html">[Quit System] </a> </span>
+                    </font>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="block header">
+                <div class="top">
+                    <a href="index.html" class="logo"><img src="themes/ecmoban_dangdang/images/logo.gif" alt="" /></a>
+                    <div class="top_search">
+                        <input name="keywords" type="text" class="keyword" v-model="key" placeholder="Input Food Name"/>
+                        <input value="Search" id="seachbtn" type="button" @click="query" style="background-color: #ff5000; color: #FFF; border: none">
+                    </div>
+                    <div class="head_r">
+                        <div class="top_shopCart clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="menu_box clearfix">
+            <div class="block">
+                <div class="menu">
+                    <a href="index.html" rel="nofollow">Home page</a>
+                    <a href="article.html" rel="nofollow">Announcement</a>
+                    <a href="special.html" rel="nofollow">Special offer</a>
+                    <a href="recommend.html" rel="nofollow">Recommendation</a>
+                    <a href="all.html" rel="nofollow">All Foods</a>
+                </div>
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block table">
+            <div class="flowBox">
+                <h6>
+                    <span>Cart</span>
+                </h6>
+                <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
+                    <tr>
+                        <th bgcolor="#ffffff">Food Name</th>
+                        <th bgcolor="#ffffff">Price</th>
+                        <th bgcolor="#ffffff">Amounts</th>
+                        <th bgcolor="#ffffff">Date</th>
+                        <th bgcolor="#ffffff">Operate</th>
+                    </tr>
+                    <tr v-for="item in cartList" :key="item.cartid">
+                        <td bgcolor="#ffffff" align="center" style="width: 300px;">
+                            <a :href="'detail.html?id='+item.foodsid+''" target="_blank"> <img style="width: 80px; height: 80px;" :src="'http://localhost:8080/vue_zxwmdcxt/upfiles/'+item.foods.image" border="0" title="" />
+                            </a> <br /> <a :href="'detail.html?id='+item.foodsid+''" target="_blank" class="f6">{{item.foodsname}}</a></td>
+                        <td align="center" bgcolor="#ffffff">${{item.price}}Dollars</td>
+                        <td align="center" bgcolor="#ffffff">{{item.num}}</td>
+                        <td align="center" bgcolor="#ffffff">{{item.addtime}}</td>
+                        <td align="center" bgcolor="#ffffff"><a href="javascript:;" class="f6" @click="deleteCart(item.cartid)">Remove</a></td>
+                    </tr>
+                </table>
+
+
+                <table width="99% " align="center " border="0 " cellpadding="5 " cellspacing="0 " bgcolor="#dddddd ">
+                    <tr>
+                        <td bgcolor="#ffffff ">
+                            <a href="index.html"><img src="themes/ecmoban_dangdang/images/continue.gif " alt="continue " /> </a>
+                        </td>
+                        <td bgcolor="#ffffff " align="right ">
+                            <a href="javascript:;" @click="checkout()"><img src="themes/ecmoban_dangdang/images/checkout.gif " alt="checkout " /> </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="blank "></div>
+
+            <div class="blank5 "></div>
+        </div>
+        <div id="footer">
+            <div class="footer">
+                <div class="footer_nav_box">
+                    <div class="footer_copyright">
+                        <span> &copy;  All rights reserved for the online food delivery ordering system <br /> <br />Service Time：09:00-23:00<br /> <br /> <a href="../admin/index.html"
+                            target="_blank">Administrator Entrance</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="themes/js/jquery.min.js"></script>
+<script type="text/javascript" src="themes/layui/layui.js"></script>
+<script type="text/javascript" src="themes/js/axios.min.js"></script>
+<script type="text/javascript" src="themes/js/vue.js"></script>
+<script type="text/javascript ">
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            islogin: '',
+            userid: '',
+            username: '',
+            realname: '',
+            cartList: {},
+            num: 0,
+            key: '',
+        },
+        methods: {
+            loadPage: function() {
+                let _this = this;
+                _this.userid = sessionStorage.getItem('userid');
+                _this.islogin = sessionStorage.getItem('userid') == null;
+                _this.realname = sessionStorage.getItem('realname');
+                axios.get('http://localhost:8080/vue_zxwmdcxt/index/cart.action?userid=' + _this.userid).then(result => {
+                    _this.cartList = result.data.cartList;
+                    _this.num = result.data.num;
+                });
+            },
+            deleteCart: function(cartid) {
+                let _this = this;
+                if (window.confirm('Confirm to delete.')) {
+                    axios.get('http://localhost:8080/vue_zxwmdcxt/index/deletecart.action?id=' + cartid).then(result => {
+                        if (result.data.code > 0) {
+                            _this.loadPage();
+                        } else {
+                            alert('fail');
+                        }
+                    });
+                }
+            },
+            checkout: function() {
+                if (this.num != 0) {
+                    window.location.href = "checkout.html";
+                } else {
+                    alert('Please add food.');
+                }
+            },
+            query: function() {
+                let url = "query.html?id=" + this.key;
+                window.location.href = url;
+            },
+        },
+        created() {
+            this.loadPage();
+        },
+    })
+</script>
+
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Online food delivery ordering system</title>
+    <link href="./themes/ecmoban_dangdang/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id="app">
+        <div class="top_nav">
+            <div class="block">
+                <ul class="top_bav_l">
+                </ul>
+                <div class="header_r">
+                    <font id="ECS_MEMBERZONE" v-if="islogin"> Welcome！ <s></s>&nbsp; <span> <a style="color: #FF6766;"
+                        href="login.html">[User login]</a> <a style="color: #FF6766;" href="register.html">[Sign Up]</a>
+                </span>
+                    </font>
+                    <font id="ECS_MEMBERZONE" v-if="!islogin"> Hello <b>{{ realname }}</b> <span><a
+                        style="color: #FF6766;" href="cart.html">[Cart]</a><a style="color: #FF6766;" href="usercenter.html">[User Center]</a> <a
+                        style="color: #FF6766;" href="exit.html">[Quit System] </a> </span>
+                    </font>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+            <div class="block header">
+                <div class="top">
+                    <a href="index.html" class="logo"><img src="themes/ecmoban_dangdang/images/logo.gif" alt="" /></a>
+                    <div class="top_search">
+                        <input name="keywords" type="text" class="keyword" v-model="key" placeholder="Input Foods name"/>
+                        <input value="Search" id="seachbtn" type="button" @click="query" style="background-color: #ff5000; color: #FFF; border: none">
+                    </div>
+                    <div class="head_r">
+                        <div class="top_shopCart clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both"></div>
+        <div class="menu_box clearfix">
+            <div class="block">
+                <div class="menu">
+                    <a href="index.html" rel="nofollow">Home page</a>
+                    <a href="article.html" rel="nofollow">Announcement</a>
+                    <a href="special.html" rel="nofollow">Special Offer</a>
+                    <a href="recommend.html" rel="nofollow">Recommendation</a>
+                    <a href="all.html" rel="nofollow">All Foods</a>
+                </div>
+            </div>
+        </div>
+        <div class="block box">
+            <div class="blank"></div>
+            <div id="ur_here">
+                Current Location: <a href="index.html">Homepage</a>
+                <code> &gt; </code> Shopping Process
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="block table">
+            <div class="flowBox">
+                <h6>
+                    <span>Shipping Information</span>
+                </h6>
+                <table width="99%" align="center" border="0" cellpadding="5" cellspacing="1" bgcolor="#dddddd">
+                    <tr>
+                        <td bgcolor="#ffffff"> Name:</td>
+                        <td bgcolor="#ffffff" colspan="2"><input v-model="receiver" type="text" class="inputBg" id="receiver" /> (Require)</td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="#ffffff">Address:</td>
+                        <td bgcolor="#ffffff" colspan="2"><input v-model="address" type="text" class="inputBg" id="address" /> (Require)</td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="#ffffff">Contact Information:</td>
+                        <td bgcolor="#ffffff" colspan="2"><input v-model="contact" type="text" class="inputBg" id="contact" /> (Require)</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" align="center" bgcolor="#ffffff"><input type="button" class="bnt_blue_2" value="Confirm" @click="checkout()" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div id="footer">
+            <div class="footer">
+                <div class="footer_nav_box">
+                    <div class="footer_copyright">
+                        <span> &copy;  All rights reserved for the online food delivery ordering system <br /> <br />Service Time：09:00-23:00<br /> <br /> <a href="../admin/index.html"
+                            target="_blank">Administrator Entrance</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="themes/js/jquery.min.js"></script>
+<script type="text/javascript" src="themes/layui/layui.js"></script>
+<script type="text/javascript" src="themes/js/axios.min.js"></script>
+<script type="text/javascript" src="themes/js/vue.js"></script>
+<script type="text/javascript">
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            islogin: '',
+            userid: '',
+            username: '',
+            realname: '',
+            address: '',
+            contact: '',
+            receiver: '',
+            key: '',
+        },
+        methods: {
+            loadPage: function() {
+                let _this = this;
+                _this.userid = sessionStorage.getItem('userid');
+                _this.islogin = sessionStorage.getItem('userid') == null;
+                _this.realname = sessionStorage.getItem('realname');
+            },
+            checkout: function() {
+                let _this = this;
+                var data = {
+                    userid: _this.userid,
+                    address: _this.address,
+                    contact: _this.contact,
+                    receiver: _this.receiver,
+                };
+                axios.post('http://localhost:8080/vue_zxwmdcxt/index/checkout.action', data).then(result => {
+                    if (result.data.code > 0) {
+                        window.location.href = "orderslist.html";
+                    } else {
+                        alert(result.data.message);
+                    }
+                });
+            },
+            query: function() {
+                let url = "query.html?id=" + this.key;
+                window.location.href = url;
+            },
+        },
+        created() {
+            this.loadPage();
+        },
+    })
+</script>
+
+</html>
